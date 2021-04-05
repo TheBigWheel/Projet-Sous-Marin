@@ -10,6 +10,8 @@ import com.jogamp.newt.Window;
 import com.jogamp.newt.event.awt.AWTKeyAdapter;
 import com.jogamp.newt.event.awt.AWTMouseAdapter;
 
+import java.util.ArrayList;
+
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 	GLUT glut;
@@ -18,6 +20,7 @@ public class MyGLEventListener implements GLEventListener {
 	//About the camera and the visualization
 	SceneMouseAdapter objectMouse;
 	SceneKeyAdapter objectKeys;
+	private int longueur = 10;
 	private float camera [] = {0.0f, 0.0f, 9.0f};
 	private float view_rotx = 0.0f, view_roty = 0.0f;
 	private float scale = 1.0f;
@@ -36,7 +39,7 @@ public class MyGLEventListener implements GLEventListener {
 	float light_position2[] = { -10.0f, -10.0f, 10.0f, 0.0f };
 	float light_position3[] = { 0.0f, 0.0f, -10.0f, 0.0f };
 
-
+	private Ocean ocean;
 	//////////////////////////////////////////////////////////////////////////////////////////////:
 	// TO FILL
 
@@ -51,9 +54,8 @@ public class MyGLEventListener implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		
 		GL2 gl = drawable.getGL().getGL2();
-		
 		//For the light and the material
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		gl.glClearColor(0.196078f,0.858824f,0.576471f,1.0f);
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glEnable(GL2.GL_COLOR_MATERIAL);
 		
@@ -101,10 +103,10 @@ public class MyGLEventListener implements GLEventListener {
 		
 		glut =  new GLUT();
 		glu =  new GLU();
-		
+		ocean = new Ocean(longueur, 4);
 		/////////////////////////////////////////////////////////////////////////////////////		
 		//TO FILL
-		
+		//gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 		//...
 	}
 
@@ -151,7 +153,7 @@ public class MyGLEventListener implements GLEventListener {
 				0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f);
 		
-		gl.glRotatef(view_rotx, 1.0f, 0.0f, 0.0f);
+		gl.glRotatef(view_rotx, 1.0f, 0.0f, -0.0f);
 		gl.glRotatef(view_roty, 0.0f, 1.0f, 0.0f);
 		
 
@@ -159,11 +161,38 @@ public class MyGLEventListener implements GLEventListener {
 		
 		gl.glPushMatrix();
 
-
+		for (int i = 0; i < this.ocean.getPoints().size(); i += 4) {
+			gl.glBegin(GL2.GL_QUADS);
+			Point p1 = this.ocean.getPoints().get(i);
+			Point p2 = this.ocean.getPoints().get(i+1);
+			Point p3 = this.ocean.getPoints().get(i+2);
+			Point p4 = this.ocean.getPoints().get(i+3);
+			if (i == 0) gl.glColor3d(1,0,0);
+			else gl.glColor3d(0.196078,0.858824,0.576471);
+			gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+			gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+			gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
+			gl.glVertex3d(p4.getX(), p4.getY(), p4.getZ());
+		}
 		//TO FILL
-
 		gl.glEnd();
-		
+
+		ArrayList<ArrayList<Point>> maillage = ocean.getMaillage();
+		for (int i = 0, maillageSize = maillage.size()-1; i <maillageSize; i++) {
+			for (int j = 0; j<maillageSize; j++) {
+
+				gl.glBegin(GL2.GL_QUADS);
+				if (i == 0 || j ==0){
+					gl.glColor3d(ocean.getCouleur().get(i+j), ocean.getCouleur().get(i+j),ocean.getCouleur().get(i+j));
+				}
+				else gl.glColor3d(ocean.getCouleur().get(i*j), ocean.getCouleur().get(i*j),ocean.getCouleur().get(i*j));
+				gl.glVertex3d(maillage.get(i).get(j+1).getX(),maillage.get(i).get(j+1).getY(),maillage.get(i).get(j+1).getZ());
+				gl.glVertex3d(maillage.get(i+1).get(j+1).getX(),maillage.get(i+1).get(j+1).getY(),maillage.get(i+1).get(j+1).getZ());
+				gl.glVertex3d(maillage.get(i+1).get(j).getX(),maillage.get(i+1).get(j).getY(),maillage.get(i+1).get(j).getZ());
+				gl.glVertex3d(maillage.get(i).get(j).getX(),maillage.get(i).get(j).getY(),maillage.get(i).get(j).getZ());
+				gl.glEnd();
+			}
+		}
 		//Every push needs a pop !
 		gl.glPopMatrix();
 	}

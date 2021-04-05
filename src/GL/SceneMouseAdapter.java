@@ -16,10 +16,17 @@ class SceneMouseAdapter extends MouseAdapter {
 		myGLEventListener = _myGLEventListener;
 	}
 
-	public void mouseWheelMoved() {
-		zoom -= 1;
-		myGLEventListener.setScale(zoom);
-	}
+	public void mouseWheelMoved(MouseEvent e) {
+	    if (e.getRotation()[1]>0){
+            zoom -= 1;
+        }
+	    else {
+	        zoom += 1;
+        }
+
+        myGLEventListener.setScale(zoom);
+    }
+
 
 	@Override
 	public void mousePressed(MouseEvent e) {
