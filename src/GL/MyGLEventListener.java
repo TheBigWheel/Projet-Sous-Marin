@@ -1,5 +1,6 @@
 package GL;
 
+import Model.*;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -39,7 +40,7 @@ public class MyGLEventListener implements GLEventListener {
 	float light_position2[] = { -10.0f, -10.0f, 10.0f, 0.0f };
 	float light_position3[] = { 0.0f, 0.0f, -10.0f, 0.0f };
 
-	private Ocean ocean;
+	private FondMarin fondMarin;
 	//////////////////////////////////////////////////////////////////////////////////////////////:
 	// TO FILL
 
@@ -103,10 +104,10 @@ public class MyGLEventListener implements GLEventListener {
 		
 		glut =  new GLUT();
 		glu =  new GLU();
-		ocean = new Ocean(longueur, 4);
+		fondMarin = new FondMarin(longueur, 4);
 		/////////////////////////////////////////////////////////////////////////////////////		
 		//TO FILL
-		//gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 		//...
 	}
 
@@ -161,12 +162,12 @@ public class MyGLEventListener implements GLEventListener {
 		
 		gl.glPushMatrix();
 
-		for (int i = 0; i < this.ocean.getPoints().size(); i += 4) {
+		for (int i = 0; i < this.fondMarin.getPoints().size(); i += 4) {
 			gl.glBegin(GL2.GL_QUADS);
-			Point p1 = this.ocean.getPoints().get(i);
-			Point p2 = this.ocean.getPoints().get(i+1);
-			Point p3 = this.ocean.getPoints().get(i+2);
-			Point p4 = this.ocean.getPoints().get(i+3);
+			Point p1 = this.fondMarin.getPoints().get(i);
+			Point p2 = this.fondMarin.getPoints().get(i+1);
+			Point p3 = this.fondMarin.getPoints().get(i+2);
+			Point p4 = this.fondMarin.getPoints().get(i+3);
 			if (i == 0) gl.glColor3d(1,0,0);
 			else gl.glColor3d(0.196078,0.858824,0.576471);
 			gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
@@ -177,15 +178,15 @@ public class MyGLEventListener implements GLEventListener {
 		//TO FILL
 		gl.glEnd();
 
-		ArrayList<ArrayList<Point>> maillage = ocean.getMaillage();
+		ArrayList<ArrayList<Point>> maillage = fondMarin.getMaillage();
 		for (int i = 0, maillageSize = maillage.size()-1; i <maillageSize; i++) {
 			for (int j = 0; j<maillageSize; j++) {
 
 				gl.glBegin(GL2.GL_QUADS);
 				if (i == 0 || j ==0){
-					gl.glColor3d(ocean.getCouleur().get(i+j), ocean.getCouleur().get(i+j),ocean.getCouleur().get(i+j));
+					gl.glColor3d(fondMarin.getCouleur().get(i+j), fondMarin.getCouleur().get(i+j),fondMarin.getCouleur().get(i+j));
 				}
-				else gl.glColor3d(ocean.getCouleur().get(i*j), ocean.getCouleur().get(i*j),ocean.getCouleur().get(i*j));
+				else gl.glColor3d(fondMarin.getCouleur().get(i*j), fondMarin.getCouleur().get(i*j),fondMarin.getCouleur().get(i*j));
 				gl.glVertex3d(maillage.get(i).get(j+1).getX(),maillage.get(i).get(j+1).getY(),maillage.get(i).get(j+1).getZ());
 				gl.glVertex3d(maillage.get(i+1).get(j+1).getX(),maillage.get(i+1).get(j+1).getY(),maillage.get(i+1).get(j+1).getZ());
 				gl.glVertex3d(maillage.get(i+1).get(j).getX(),maillage.get(i+1).get(j).getY(),maillage.get(i+1).get(j).getZ());

@@ -1,6 +1,8 @@
 package GL;
 
 
+import Model.Point;
+
 import java.util.ArrayList;
 
 public class Ocean {

@@ -1,4 +1,4 @@
-package GL;
+package Model;
 
 public class Point {
     private double x;
