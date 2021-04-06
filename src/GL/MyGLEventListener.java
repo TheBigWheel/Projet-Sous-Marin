@@ -41,6 +41,7 @@ public class MyGLEventListener implements GLEventListener {
 	float light_position3[] = { 0.0f, 0.0f, -10.0f, 0.0f };
 
 	private FondMarin fondMarin;
+	private SousMarin sousMarin;
 	//////////////////////////////////////////////////////////////////////////////////////////////:
 	// TO FILL
 
@@ -105,6 +106,7 @@ public class MyGLEventListener implements GLEventListener {
 		glut =  new GLUT();
 		glu =  new GLU();
 		fondMarin = new FondMarin(longueur, 4);
+		sousMarin = new SousMarin();
 		/////////////////////////////////////////////////////////////////////////////////////		
 		//TO FILL
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
@@ -162,6 +164,14 @@ public class MyGLEventListener implements GLEventListener {
 		
 		gl.glPushMatrix();
 
+		dessinerFondMarin(gl);
+		dessinerSousMarin(gl);
+		//Every push needs a pop !
+		gl.glPopMatrix();
+	}
+
+
+	public void dessinerFondMarin(GL2 gl) {
 		for (int i = 0; i < this.fondMarin.getPoints().size(); i += 4) {
 			gl.glBegin(GL2.GL_QUADS);
 			Point p1 = this.fondMarin.getPoints().get(i);
@@ -194,10 +204,61 @@ public class MyGLEventListener implements GLEventListener {
 				gl.glEnd();
 			}
 		}
-		//Every push needs a pop !
-		gl.glPopMatrix();
 	}
 
+	public void dessinerSousMarin(GL2 gl) {
+		for (ArrayList<Point> point : sousMarin.getPointsCylindre()) {
+			int nbPF = point.size();
+			for (int j = 0; j < sousMarin.getNbMeridienCylindre(); j++) {
+				gl.glBegin(GL2.GL_QUADS);
+				Point p0 = point.get(j);
+				Point p1 = point.get(j + nbPF /2);
+				Point p2 = point.get(j + 1 + nbPF/2);
+				Point p3 = point.get(j + 1);
+
+				gl.glColor3d(1, 1, 1);
+				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
+
+				gl.glColor3d(1, 1, 1);
+				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+
+				gl.glColor3d(1, 1, 1);
+				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+
+				gl.glColor3d(1, 1, 1);
+				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
+
+				gl.glEnd();
+			}
+		}
+		int nbP = sousMarin.getPointsCylindre().get(0).size();
+		for(int i=0; i<sousMarin.getNbMeridienCylindre();i++) {
+			gl.glBegin(GL2.GL_TRIANGLES);
+
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d(sousMarin.getCentreCercle()[0].getX(), sousMarin.getCentreCercle()[0].getY(), sousMarin.getCentreCercle()[0].getZ());
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(i).getX(), sousMarin.getPointsCylindre().get(0).get(i).getY(), sousMarin.getPointsCylindre().get(0).get(i).getZ());
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(i+1).getX(), sousMarin.getPointsCylindre().get(0).get((i+1)).getY(), sousMarin.getPointsCylindre().get(0).get(i+1).getZ());
+
+			gl.glEnd();
+
+			gl.glBegin(GL2.GL_TRIANGLES);
+
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d(sousMarin.getCentreCercle()[1].getX(), sousMarin.getCentreCercle()[1].getY(), sousMarin.getCentreCercle()[1].getZ());
+
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d(sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getX(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getZ());
+
+			gl.glColor3d(1,1,1);
+			gl.glVertex3d((sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getX()), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getZ());
+
+			gl.glEnd();
+
+		}
+	}
 	//GETTER AND SETTER
 	//*************************************************************
 	public float getView_rotx() {
