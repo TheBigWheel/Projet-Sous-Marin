@@ -21,7 +21,7 @@ public class MyGLEventListener implements GLEventListener {
 	//About the camera and the visualization
 	SceneMouseAdapter objectMouse;
 	SceneKeyAdapter objectKeys;
-	private int longueur = 10;
+	private int longueur;
 	private float camera [] = {0.0f, 0.0f, 9.0f};
 	private float view_rotx = 0.0f, view_roty = 0.0f;
 	private float scale = 1.0f;
@@ -42,6 +42,9 @@ public class MyGLEventListener implements GLEventListener {
 
 	private FondMarin fondMarin;
 	private SousMarin sousMarin;
+	private float d;
+	private float longueurSousMarin;
+	private float rayonSousMarin;
 	//////////////////////////////////////////////////////////////////////////////////////////////:
 	// TO FILL
 
@@ -105,8 +108,15 @@ public class MyGLEventListener implements GLEventListener {
 		
 		glut =  new GLUT();
 		glu =  new GLU();
-		fondMarin = new FondMarin(longueur, 4);
-		sousMarin = new SousMarin();
+
+		longueur = 100;
+		fondMarin = new FondMarin(longueur, 10);
+
+		longueurSousMarin = 25;
+		rayonSousMarin = 5;
+		sousMarin = new SousMarin(longueurSousMarin, rayonSousMarin);
+		d = 0;
+		setView_roty(this.longueur);
 		/////////////////////////////////////////////////////////////////////////////////////		
 		//TO FILL
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
@@ -128,7 +138,8 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		glu.gluPerspective(60.0f, (float) aspect, 0.1f, 100.0f);
+		glu.gluPerspective(this.longueur*1.25, (float) aspect, 0.1f, this.longueur*1.5);
+		//gl.glOrtho(-(this.longueur)*1.25, (this.longueur) *1.25, -(this.longueur)*1.25,this.longueur*1.25, -this.longueur*1.25, this.longueur*1.25);
 				
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -155,7 +166,7 @@ public class MyGLEventListener implements GLEventListener {
 		glu.gluLookAt(camera[0], camera[1], camera[2]+scale,
 				0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f);
-		
+
 		gl.glRotatef(view_rotx, 1.0f, 0.0f, -0.0f);
 		gl.glRotatef(view_roty, 0.0f, 1.0f, 0.0f);
 		
@@ -165,8 +176,8 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glPushMatrix();
 
 		dessinerFondMarin(gl);
+		gl.glTranslatef(0,0,d);
 		dessinerSousMarin(gl);
-		//Every push needs a pop !
 		gl.glPopMatrix();
 	}
 
@@ -207,58 +218,81 @@ public class MyGLEventListener implements GLEventListener {
 	}
 
 	public void dessinerSousMarin(GL2 gl) {
-		for (ArrayList<Point> point : sousMarin.getPointsCylindre()) {
-			int nbPF = point.size();
+		gl.glColor3d(1, 1, 1);
+		dessinerCylindre(gl);
+		gl.glPushMatrix();
+			gl.glTranslatef(0,0,longueurSousMarin/2);
+			dessinerSphere(gl);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+			gl.glTranslatef(0,0,-longueurSousMarin/2);
+			gl.glRotatef(180,0,1,0);
+			dessinerSphere(gl);
+		gl.glPopMatrix();
+	}
+
+	public void dessinerCylindre(GL2 gl) {
+		ArrayList<ArrayList<Point>> pointsCylindre = sousMarin.getPointsCylindre();
+		for (int i = 0; i < pointsCylindre.size()-1; i++) {
+			ArrayList<Point> pointsParallele = pointsCylindre.get(i);
+			ArrayList<Point> pointsParallele1 = pointsCylindre.get(i+1);
 			for (int j = 0; j < sousMarin.getNbMeridienCylindre(); j++) {
+				if (i == 0){
+					gl.glBegin(GL2.GL_TRIANGLES);
+
+					gl.glVertex3d(sousMarin.getCentreCercle()[0].getX(), sousMarin.getCentreCercle()[0].getY(), sousMarin.getCentreCercle()[0].getZ());
+					gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(j).getX(), sousMarin.getPointsCylindre().get(0).get(j).getY(), sousMarin.getPointsCylindre().get(0).get(j).getZ());
+					gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(j + 1).getX(), sousMarin.getPointsCylindre().get(0).get(j + 1).getY(), sousMarin.getPointsCylindre().get(0).get(j + 1).getZ());
+
+					gl.glEnd();
+
+					gl.glBegin(GL2.GL_TRIANGLES);
+
+					gl.glVertex3d(sousMarin.getCentreCercle()[1].getX(), sousMarin.getCentreCercle()[1].getY(), sousMarin.getCentreCercle()[1].getZ());
+					gl.glVertex3d(sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getX(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getZ());
+					gl.glVertex3d((sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getX()), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getZ());
+
+					gl.glEnd();
+				}
+
 				gl.glBegin(GL2.GL_QUADS);
-				Point p0 = point.get(j);
-				Point p1 = point.get(j + nbPF /2);
-				Point p2 = point.get(j + 1 + nbPF/2);
-				Point p3 = point.get(j + 1);
+				Point p0 = pointsParallele.get(j);
+				Point p1 = pointsParallele1.get(j);
+				Point p2 = pointsParallele1.get(j + 1);
+				Point p3 = pointsParallele.get(j + 1);
 
-				gl.glColor3d(1, 1, 1);
 				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
-
-				gl.glColor3d(1, 1, 1);
 				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
-
-				gl.glColor3d(1, 1, 1);
 				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
-
-				gl.glColor3d(1, 1, 1);
 				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
 
 				gl.glEnd();
 			}
 		}
-		int nbP = sousMarin.getPointsCylindre().get(0).size();
-		for(int i=0; i<sousMarin.getNbMeridienCylindre();i++) {
-			gl.glBegin(GL2.GL_TRIANGLES);
+	}
+	public void dessinerSphere(GL2 gl) {
+		ArrayList<ArrayList<Point>> pointsSphere = sousMarin.getPointsSphere();
+		for (int i = 0; i <= (pointsSphere.size())/2; i++) {
+			ArrayList<Point> pointsParallele = pointsSphere.get(i);
+			ArrayList<Point> pointsParallele1 = pointsSphere.get(i+1);
+			for (int j = 0; j < sousMarin.getNbMeridienSphere(); j++) {
+				gl.glBegin(GL2.GL_QUADS);
+				Point p0 = pointsParallele.get(j);
+				Point p1 = pointsParallele1.get(j);
+				Point p2 = pointsParallele1.get(j + 1);
+				Point p3 = pointsParallele.get(j + 1);
 
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d(sousMarin.getCentreCercle()[0].getX(), sousMarin.getCentreCercle()[0].getY(), sousMarin.getCentreCercle()[0].getZ());
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(i).getX(), sousMarin.getPointsCylindre().get(0).get(i).getY(), sousMarin.getPointsCylindre().get(0).get(i).getZ());
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(i+1).getX(), sousMarin.getPointsCylindre().get(0).get((i+1)).getY(), sousMarin.getPointsCylindre().get(0).get(i+1).getZ());
+				gl.glColor3d(1, 1, 1);
+				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
+				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
 
-			gl.glEnd();
-
-			gl.glBegin(GL2.GL_TRIANGLES);
-
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d(sousMarin.getCentreCercle()[1].getX(), sousMarin.getCentreCercle()[1].getY(), sousMarin.getCentreCercle()[1].getZ());
-
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d(sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getX(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+1+nbP/2).getZ());
-
-			gl.glColor3d(1,1,1);
-			gl.glVertex3d((sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getX()), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbPartieFaceCylindre()-1).get(i+ nbP/2).getZ());
-
-			gl.glEnd();
-
+				gl.glEnd();
+			}
 		}
 	}
+
 	//GETTER AND SETTER
 	//*************************************************************
 	public float getView_rotx() {
@@ -283,5 +317,12 @@ public class MyGLEventListener implements GLEventListener {
 		
 	public void setScale(float scale2) {
 		this.scale = scale2;
+	}
+	public float getD() {
+		return d;
+	}
+
+	public void setD(float d) {
+		this.d = d;
 	}
 }

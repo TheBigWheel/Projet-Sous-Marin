@@ -67,7 +67,7 @@ public class FondMarin {
             for (int j = 0; j<=this.nbpoints*2; j++){
                 double c = 0.2+Math.random()*0.33;
                 couleur.add(c);
-                a.add(new Point(-this.longueur+(this.longueur/nbpoints)*i, -this.longueur + Math.random()*this.longueur*0.5,-this.longueur+(this.longueur/nbpoints)*j));
+                a.add(new Point(-this.longueur+(this.longueur/nbpoints)*i, -this.longueur + ((Math.random()*2)-1)*this.longueur*(1.0/5),-this.longueur+(this.longueur/nbpoints)*j));
             }
             maillage.add(a);
         }
@@ -85,8 +85,4 @@ public class FondMarin {
         return couleur;
     }
 
-    public void setCouleur(ArrayList<Double> couleur) {
-
-        this.couleur = couleur;
-    }
 }

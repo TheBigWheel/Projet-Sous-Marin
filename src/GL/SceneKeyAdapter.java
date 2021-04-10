@@ -6,7 +6,7 @@ import com.jogamp.newt.event.KeyEvent;
 class SceneKeyAdapter extends KeyAdapter {
 	private float view_rotx, view_roty;
 	private float zoom = 1;
-	
+    float d;
 	private MyGLEventListener myGLEventListener;
 
 	
@@ -23,7 +23,8 @@ class SceneKeyAdapter extends KeyAdapter {
 
         view_rotx = myGLEventListener.getView_rotx();
 		view_roty = myGLEventListener.getView_roty();
-		
+		d = myGLEventListener.getD();
+
         if(140 == kc) {
             zoom += 0.1;
             //System.out.println("Key pressed: zoom in="+zoom);
@@ -45,8 +46,8 @@ class SceneKeyAdapter extends KeyAdapter {
         } 
         
         else if(KeyEvent.VK_UP == kc) {
-            view_rotx -= 1;
-            //System.out.println("Key pressed: view_rotx="+view_rotx);
+            d+=1;
+            myGLEventListener.setD(d);
         } 
         
         else if(KeyEvent.VK_DOWN == kc) {
