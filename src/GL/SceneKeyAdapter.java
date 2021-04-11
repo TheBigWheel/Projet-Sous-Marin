@@ -74,8 +74,29 @@ class SceneKeyAdapter extends KeyAdapter {
                 myGLEventListener.setLambda((float) Math.PI/64);
             }
         }
-        else {
-        	//System.out.println(e.getKeyCode());
+        else if (KeyEvent.VK_A == kc){
+            myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
+            myGLEventListener.setTheta((float) Math.PI/6);
+            myGLEventListener.setY(0.5f);
+
+            if (myGLEventListener.getLambda()>0){
+                myGLEventListener.setLambda((float) -Math.PI/64);
+            } else if (myGLEventListener.getLambda()<0){
+                myGLEventListener.setLambda((float) Math.PI/64);
+            }
+        }
+        else if (KeyEvent.VK_E == kc){
+            myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
+            myGLEventListener.setTheta((float) Math.PI/6);
+            myGLEventListener.setY(-0.5f);
+
+            if (myGLEventListener.getLambda()>0){
+                myGLEventListener.setLambda((float) -Math.PI/64);
+            } else if (myGLEventListener.getLambda()<0){
+                myGLEventListener.setLambda((float) Math.PI/64);
+            }
         }
         
         myGLEventListener.setView_rotx(view_rotx);

@@ -49,6 +49,7 @@ public class MyGLEventListener implements GLEventListener {
 	private SousMarin sousMarin;
 	private int longueur;
 	private float x;
+	private float y;
 	private float z;
 	private float longueurSousMarin;
 	private float rayonSousMarin;
@@ -123,6 +124,7 @@ public class MyGLEventListener implements GLEventListener {
 		rayonSousMarin = 1;
 		sousMarin = new SousMarin(longueurSousMarin, rayonSousMarin);
 		x=0;
+		y=0;
 		z=0;
 		delta = 0;
 		theta = (float) Math.PI/4;
@@ -178,7 +180,7 @@ public class MyGLEventListener implements GLEventListener {
 
 		gl.glPushMatrix();
 			dessinerEnvironnementMarin(gl);
-			gl.glTranslatef(x,0f,z);
+			gl.glTranslatef(x,y,z);
 			gl.glRotatef((float) Math.toDegrees(delta), 0f, 1f, 0f);
 			dessinerSousMarin(gl);
 		gl.glPopMatrix();
@@ -532,6 +534,13 @@ public class MyGLEventListener implements GLEventListener {
 	public void setX(float x) {
 		this.x += x;
 	}
+	public void setY(float y) {
+		this.y += y;
+	}
+
+	public void setZ(float z) {
+		this.z += z;
+	}
 
 	public float getDelta() {
 		return delta;
@@ -543,10 +552,6 @@ public class MyGLEventListener implements GLEventListener {
 
 	public float getZ() {
 		return z;
-	}
-
-	public void setZ(float z) {
-		this.z += z;
 	}
 
 	public void setTheta(float theta) {
