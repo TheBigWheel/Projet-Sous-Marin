@@ -1,16 +1,25 @@
 package Model;
 
+/**
+ * Classe permettant la création et modification de point (x,y,z)
+ */
 public class Point {
     private double x;
     private double y;
     private double z;
 
+    /**
+     * @param x Coordonnée en x du point
+     * @param y Coordonnée en y du point
+     * @param z Coordonnée en z du point
+     */
     public Point(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
+    //GETTER AND SETTER
     public double getX() {
         return this.x;
     }

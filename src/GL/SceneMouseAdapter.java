@@ -6,6 +6,9 @@ import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLProfile;
 
+/**
+ * Classe permettant de récupérer les infos d'input souris
+ */
 class SceneMouseAdapter extends MouseAdapter {
 	private int prevMouseX, prevMouseY;
 	private float view_rotx, view_roty;
@@ -35,9 +38,7 @@ class SceneMouseAdapter extends MouseAdapter {
 	}
 
     @Override
-	public void mouseReleased(MouseEvent e) {
-    
-    }
+	public void mouseReleased(MouseEvent e) { }
 
     @Override
 	public void mouseDragged(MouseEvent e) {

@@ -1,23 +1,32 @@
 package Model;
 
-import Model.Point;
-
 import java.util.ArrayList;
 
-public class FondMarin {
+/**
+ * Classe permettant l'initialisation de l'environnement marin
+ */
+public class EnvironnementMarin {
     private ArrayList<Point> points;
     private double longueur;
     private double nbpoints;
     private ArrayList<ArrayList<Point>> maillage = new ArrayList<>();
     private ArrayList<Double> couleur = new ArrayList<>();
 
-    public FondMarin(int l, double nbpoints) {
+    /**
+     * @param l         longueur du cube fond marin
+     * @param nbpoints  Nombre de points du maillage du fond marin
+     * Constructeur d'EnvironnementMarin
+     */
+    public EnvironnementMarin(int l, double nbpoints) {
         this.longueur = l;
         this.points = new ArrayList<>();
         this.nbpoints = nbpoints;
-        init();
+        this.init();
     }
 
+    /**
+     * Initialise tous les éléments de l'environnement marin
+     */
     public void init() {
         Point p1 = new Point(this.longueur, this.longueur, this.longueur);
         Point p2 = new Point(this.longueur, this.longueur, -this.longueur);
@@ -58,9 +67,13 @@ public class FondMarin {
         this.points.add(p2);
         this.points.add(p6);
 
-        constructionSol();
+        //Fond marin
+        this.constructionSol();
     }
 
+    /**
+     * Construction du fond marin
+     */
     public void constructionSol(){
         for (int i = 0; i<=this.nbpoints*2; i++){
             ArrayList<Point> a = new ArrayList<>();
@@ -73,6 +86,7 @@ public class FondMarin {
         }
     }
 
+    //GETTER
     public ArrayList<ArrayList<Point>> getMaillage() {
         return maillage;
     }

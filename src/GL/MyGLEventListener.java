@@ -13,6 +13,9 @@ import com.jogamp.newt.event.awt.AWTMouseAdapter;
 
 import java.util.ArrayList;
 
+/**
+ * Classe dans laquelle on représente notre modélisation (Affichage, mouvement, ...)
+ */
 //Applications implement the GLEventListener interface to perform OpenGL drawing via callbacks.
 public class MyGLEventListener implements GLEventListener {
 	GLUT glut;
@@ -21,7 +24,8 @@ public class MyGLEventListener implements GLEventListener {
 	//About the camera and the visualization
 	SceneMouseAdapter objectMouse;
 	SceneKeyAdapter objectKeys;
-	private int longueur;
+
+
 	private float camera [] = {0.0f, 0.0f, 9.0f};
 	private float view_rotx = 0.0f, view_roty = 0.0f;
 	private float scale = 1.0f;
@@ -40,8 +44,10 @@ public class MyGLEventListener implements GLEventListener {
 	float light_position2[] = { -10.0f, -10.0f, 10.0f, 0.0f };
 	float light_position3[] = { 0.0f, 0.0f, -10.0f, 0.0f };
 
-	private FondMarin fondMarin;
+	//Attributs servant à la modélisation des objets
+	private EnvironnementMarin environnementMarin;
 	private SousMarin sousMarin;
+	private int longueur;
 	private float x;
 	private float z;
 	private float longueurSousMarin;
@@ -61,7 +67,7 @@ public class MyGLEventListener implements GLEventListener {
 		
 		GL2 gl = drawable.getGL().getGL2();
 		//For the light and the material
-		gl.glClearColor(0.196078f,0.858824f,0.576471f,1.0f);
+		gl.glClearColor(0,0.5f,1,1.0f);
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glEnable(GL2.GL_COLOR_MATERIAL);
 		
@@ -149,9 +155,7 @@ public class MyGLEventListener implements GLEventListener {
 
 	
 	@Override
-	public void dispose(GLAutoDrawable drawable) {
-	
-	}
+	public void dispose(GLAutoDrawable drawable) { }
 
 
 	/**
@@ -171,11 +175,9 @@ public class MyGLEventListener implements GLEventListener {
 
 		gl.glRotatef(view_rotx, 1.0f, 0.0f, -0.0f);
 		gl.glRotatef(view_roty, 0.0f, 1.0f, 0.0f);
-		
 
-		//TO FILL
 		gl.glPushMatrix();
-			dessinerFondMarin(gl);
+			dessinerEnvironnementMarin(gl);
 			gl.glTranslatef(x,0f,z);
 			gl.glRotatef((float) Math.toDegrees(delta), 0f, 1f, 0f);
 			dessinerSousMarin(gl);
@@ -201,8 +203,6 @@ public class MyGLEventListener implements GLEventListener {
 			gl.glVertex3d(p4.getX(), p4.getY(), p4.getZ());
 
 		}
-		//TO FILL
-		gl.glEnd();
 
 		ArrayList<ArrayList<Point>> maillage = environnementMarin.getMaillage();
 		for (int i = 0, maillageSize = maillage.size()-1; i <maillageSize; i++) {
@@ -222,6 +222,9 @@ public class MyGLEventListener implements GLEventListener {
 		}
 	}
 
+	/**
+	 * Dessine toutes les composantes du sous-marin
+	 */
 	public void dessinerSousMarin(GL2 gl) {
 		gl.glColor3d(0.3, 0.3, 0.3);
 		dessinerCorpsSousMarin(gl);
@@ -240,6 +243,9 @@ public class MyGLEventListener implements GLEventListener {
 		dessinerGouvernail(gl);
 	}
 
+	/**
+	 * Dessine le cylindre du sous-marin
+	 */
 	public void dessinerCylindre(GL2 gl) {
 		ArrayList<ArrayList<Point>> pointsCylindre = sousMarin.getPointsCylindre();
 		for (int i = 0; i < pointsCylindre.size()-1; i++) {
@@ -248,37 +254,35 @@ public class MyGLEventListener implements GLEventListener {
 			for (int j = 0; j < sousMarin.getNbMeridienCylindre(); j++) {
 				if (i == 0){
 					gl.glBegin(GL2.GL_TRIANGLES);
-
 					gl.glVertex3d(sousMarin.getCentreCercle()[0].getX(), sousMarin.getCentreCercle()[0].getY(), sousMarin.getCentreCercle()[0].getZ());
 					gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(j).getX(), sousMarin.getPointsCylindre().get(0).get(j).getY(), sousMarin.getPointsCylindre().get(0).get(j).getZ());
 					gl.glVertex3d(sousMarin.getPointsCylindre().get(0).get(j + 1).getX(), sousMarin.getPointsCylindre().get(0).get(j + 1).getY(), sousMarin.getPointsCylindre().get(0).get(j + 1).getZ());
-
 					gl.glEnd();
 
 					gl.glBegin(GL2.GL_TRIANGLES);
-
 					gl.glVertex3d(sousMarin.getCentreCercle()[1].getX(), sousMarin.getCentreCercle()[1].getY(), sousMarin.getCentreCercle()[1].getZ());
 					gl.glVertex3d(sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getX(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j + 1).getZ());
 					gl.glVertex3d((sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getX()), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getY(), sousMarin.getPointsCylindre().get(sousMarin.getNbParalleleCylindre()).get(j).getZ());
-
 					gl.glEnd();
 				}
-
 				gl.glBegin(GL2.GL_QUADS);
 				Point p0 = pointsParallele.get(j);
 				Point p1 = pointsParallele1.get(j);
 				Point p2 = pointsParallele1.get(j + 1);
 				Point p3 = pointsParallele.get(j + 1);
-
 				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
 				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
 				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
 				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
-
 				gl.glEnd();
 			}
 		}
 	}
+
+
+	/**
+	 * Dessine les deux sphères aux deux extrémités du sous-marin
+	 */
 	public void dessinerSphere(GL2 gl) {
 		ArrayList<ArrayList<Point>> pointsSphere = sousMarin.getPointsSphere();
 		for (int i = 0; i <= (pointsSphere.size())/2; i++) {
@@ -291,7 +295,6 @@ public class MyGLEventListener implements GLEventListener {
 				Point p2 = pointsParallele1.get(j + 1);
 				Point p3 = pointsParallele.get(j + 1);
 
-				gl.glColor3d(1, 1, 1);
 				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
 				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
 				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
@@ -339,6 +342,9 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
+	/**
+	 * Dessine le cylindre dans lequel seront mis les hélices
+	 */
 	public void dessinerCylindreHelice(GL2 gl) {
 		ArrayList<ArrayList<Point>> pointsCylindre = sousMarin.getPointsCylindre();
 		for (int i = 0; i < pointsCylindre.size() - 1; i++) {
@@ -427,10 +433,21 @@ public class MyGLEventListener implements GLEventListener {
 		}
 	}
 
-	public void dessinerGouvernail() {
-
+	/**
+	 * Dessine le gouvernail du sous-marin
+	 */
+	public void dessinerGouvernail(GL2 gl) {
+		gl.glTranslatef(0,0, (float) (-this.longueurSousMarin/2+(this.rayonSousMarin*0.4)));
+		gl.glRotatef((float) Math.toDegrees(lambda),0,1,0);
+		gl.glTranslatef(0,0,-this.rayonSousMarin*0.4f);
+		gl.glScalef(0.05f,0.60f,0.4f);
+		gl.glRotatef(90,1,0,0);
+		dessinerCylindre(gl);
 	}
 
+	/**
+	 * Dessine le cockpit du sous-marin
+	 */
 	public void dessinerCockpit(GL2 gl) {
 		ArrayList<ArrayList<Point>> pointsCockpit = sousMarin.getPointsCockpit();
 		for (int i = 0; i < pointsCockpit.size() - 1; i++) {
@@ -485,7 +502,6 @@ public class MyGLEventListener implements GLEventListener {
 	}
 
 	//GETTER AND SETTER
-	//*************************************************************
 	public float getView_rotx() {
 		return view_rotx;
 	}

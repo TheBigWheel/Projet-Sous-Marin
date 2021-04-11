@@ -2,9 +2,10 @@ package Model;
 
 import java.util.ArrayList;
 
+/**
+ * Classe permettant l'initialisation du sous-marin
+ */
 public class SousMarin {
-
-
     private final float longueur;
     private final float rayon;
     private ArrayList<ArrayList<Point>> pointsCylindre;
@@ -27,12 +28,20 @@ public class SousMarin {
     private int nbParalleleBaseHelice;
 
 
+    /**
+     * @param longueur Longueur du sous-marin
+     * @param rayon    Rayon du sous-marin
+     * Constructeur de SousMarin
+     */
     public SousMarin(float longueur, float rayon){
         this.longueur = longueur;
         this.rayon = rayon;
-        init();
+        this.init();
     }
 
+    /**
+     * Initialise tous les éléments du sous-marin
+     */
     public void  init(){
         this.initCylindre();
         this.initSphere();
@@ -40,10 +49,14 @@ public class SousMarin {
         this.initBaseHelice();
     }
 
+    /**
+     * Initialise le cylindre du sous-marin
+     */
     public void initCylindre(){
-
         pointsCylindre = new ArrayList<ArrayList<Point>>() ;
         centreCercle = new Point[] { new Point(0, 0, longueur/2), new Point(0, 0, -longueur/2) };
+
+        //Valeurs des méridiens du cylindre
         nbMeridienCylindre = 50;
         nbParalleleCylindre = 20;
 
@@ -64,9 +77,13 @@ public class SousMarin {
         }
     }
 
+    /**
+     * Initalise une demi-sphère
+     */
     public void initSphere() {
-
         pointsSphere = new ArrayList<ArrayList<Point>>() ;
+
+        //Valeurs des méridiens des sphères
         nbMeridienSphere = 50;
         nbParalleleSphere = 20;
 
@@ -85,14 +102,17 @@ public class SousMarin {
                 x=(rayon*Math.cos(lambda))*Math.cos(theta);
                 y=(rayon*Math.cos(lambda))*Math.sin(theta);
                 pointsSphere.get(j).add(new Point(x,y,z));
-
             }
         }
     }
 
+    /**
+     * Initialise le cockpit du sous-marin
+     */
     public void initCockpit() {
-
         pointsCockpit = new ArrayList<ArrayList<Point>>();
+
+        //Valeur des méridiens du cockpit
         nbMeridienCockpit = 50;
         nbParalleleCockpit = 20;
 

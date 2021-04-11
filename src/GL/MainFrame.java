@@ -8,6 +8,9 @@ import com.jogamp.opengl.awt.GLCanvas;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
 
+/**
+ * Classe initialisant l'affichage de la fenêtre de l'application
+ */
 public class MainFrame extends JFrame {
 
     public MainFrame(){
