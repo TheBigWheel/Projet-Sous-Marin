@@ -16,6 +16,11 @@ public class SousMarin {
     private int nbMeridienSphere;
     private int nbParalleleSphere;
 
+    private ArrayList<ArrayList<Point>> pointsCockpit;
+    private int nbMeridienCockpit;
+    private int nbParalleleCockpit;
+    private Point[] faceCockpit;
+
 
     public SousMarin(float longueur, float rayon){
         this.longueur = longueur;
@@ -26,6 +31,7 @@ public class SousMarin {
     public void  init(){
         initCylindre();
         initSphere();
+        initCockpit();
     }
 
     public void initCylindre(){
@@ -78,6 +84,31 @@ public class SousMarin {
         }
     }
 
+    public void initCockpit() {
+
+        pointsCockpit = new ArrayList<ArrayList<Point>>();
+        nbMeridienCockpit = 50;
+        nbParalleleCockpit = 20;
+
+        double theta;
+        double x;
+        double y;
+        double z;
+
+        faceCockpit = new Point[] {new Point(0, longueur/2, 0), new Point(0, -longueur/2, 0)};
+
+        for(int j = 0; j <= nbParalleleCockpit; j++) {
+            pointsCockpit.add(new ArrayList<Point>());
+            for (int i = 0; i <= nbMeridienCockpit; i++) {
+                theta = 2.0 * Math.PI * ((double) i / nbMeridienCockpit);
+                x = rayon * Math.cos(theta);
+                y = (longueur / 2) - ((longueur / nbParalleleCockpit) * j);
+                z = rayon * Math.sin(theta);
+                pointsCockpit.get(j).add(new Point(x, y, z));
+            }
+        }
+    }
+
     public ArrayList<ArrayList<Point>> getPointsCylindre() {
         return pointsCylindre;
     }
@@ -102,7 +133,19 @@ public class SousMarin {
         return nbMeridienSphere;
     }
 
-    public int getNbParalleleSphere() {
-        return nbParalleleSphere;
+    public ArrayList<ArrayList<Point>> getPointsCockpit() {
+        return pointsCockpit;
+    }
+
+    public int getNbMeridienCockpit() {
+        return nbMeridienCockpit;
+    }
+
+    public int getNbParalleleCockpit() {
+        return nbParalleleCockpit;
+    }
+
+    public Point[] getFaceCockpit() {
+        return faceCockpit;
     }
 }

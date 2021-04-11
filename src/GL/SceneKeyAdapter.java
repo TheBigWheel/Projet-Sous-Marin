@@ -6,7 +6,8 @@ import com.jogamp.newt.event.KeyEvent;
 class SceneKeyAdapter extends KeyAdapter {
 	private float view_rotx, view_roty;
 	private float zoom = 1;
-    float d;
+    float x;
+    float delta;
 	private MyGLEventListener myGLEventListener;
 
 	
@@ -23,7 +24,8 @@ class SceneKeyAdapter extends KeyAdapter {
 
         view_rotx = myGLEventListener.getView_rotx();
 		view_roty = myGLEventListener.getView_roty();
-		d = myGLEventListener.getD();
+		x = myGLEventListener.getX();
+        delta = myGLEventListener.getDelta();
 
         if(140 == kc) {
             zoom += 0.1;
@@ -34,25 +36,27 @@ class SceneKeyAdapter extends KeyAdapter {
             zoom -= 0.1;
             //System.out.println("Key pressed: zoom out");
         } 
-        
+
         if(KeyEvent.VK_LEFT == kc) {
-            view_roty -= 1;
-            //System.out.println("Key pressed: view_roty="+view_roty);
+            myGLEventListener.setDelta((float) (Math.PI/32));
+            myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
         } 
         
         else if(KeyEvent.VK_RIGHT == kc) {
-            view_roty += 1;
-            //System.out.println("Key pressed: view_roty="+view_roty);
+            myGLEventListener.setDelta((float) -(Math.PI/32));
+            myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
         } 
         
         else if(KeyEvent.VK_UP == kc) {
-            d+=1;
-            myGLEventListener.setD(d);
+            myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
         } 
         
         else if(KeyEvent.VK_DOWN == kc) {
-            view_rotx += 1;
-            //System.out.println("Key pressed: view_rotx="+view_rotx);
+            myGLEventListener.setX((float) -Math.sin(myGLEventListener.getDelta()));
+            myGLEventListener.setZ((float) -Math.cos(myGLEventListener.getDelta()));
         }
         else {
         	//System.out.println(e.getKeyCode());
@@ -60,7 +64,6 @@ class SceneKeyAdapter extends KeyAdapter {
         
         myGLEventListener.setView_rotx(view_rotx);
         myGLEventListener.setView_roty(view_roty);
-        myGLEventListener.setScale(zoom);
     }
 	
 	public float getScale() {

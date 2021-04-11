@@ -42,9 +42,11 @@ public class MyGLEventListener implements GLEventListener {
 
 	private FondMarin fondMarin;
 	private SousMarin sousMarin;
-	private float d;
+	private float x;
+	private float z;
 	private float longueurSousMarin;
 	private float rayonSousMarin;
+	private float delta;
 	//////////////////////////////////////////////////////////////////////////////////////////////:
 	// TO FILL
 
@@ -109,14 +111,15 @@ public class MyGLEventListener implements GLEventListener {
 		glut =  new GLUT();
 		glu =  new GLU();
 
-		longueur = 100;
+		longueur = 25;
 		fondMarin = new FondMarin(longueur, 10);
 
-		longueurSousMarin = 25;
-		rayonSousMarin = 5;
+		longueurSousMarin = 5;
+		rayonSousMarin = 1;
 		sousMarin = new SousMarin(longueurSousMarin, rayonSousMarin);
-		d = 0;
-		setView_roty(this.longueur);
+		x=0;
+		z=0;
+		delta = 0;
 		/////////////////////////////////////////////////////////////////////////////////////		
 		//TO FILL
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
@@ -138,9 +141,9 @@ public class MyGLEventListener implements GLEventListener {
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		glu.gluPerspective(this.longueur*1.25, (float) aspect, 0.1f, this.longueur*1.5);
+		//glu.gluPerspective(this.longueur*1.25, (float) aspect, 0.1f, this.longueur*1.5);
 		//gl.glOrtho(-(this.longueur)*1.25, (this.longueur) *1.25, -(this.longueur)*1.25,this.longueur*1.25, -this.longueur*1.25, this.longueur*1.25);
-				
+		glu.gluPerspective(60f, (float) aspect, 0.1f, 100f);
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 	}
@@ -172,12 +175,11 @@ public class MyGLEventListener implements GLEventListener {
 		
 
 		//TO FILL
-		
 		gl.glPushMatrix();
-
-		dessinerFondMarin(gl);
-		gl.glTranslatef(0,0,d);
-		dessinerSousMarin(gl);
+			dessinerFondMarin(gl);
+			gl.glTranslatef(x,0f,z);
+			gl.glRotatef((float) Math.toDegrees(delta), 0f, 1f, 0f);
+			dessinerSousMarin(gl);
 		gl.glPopMatrix();
 	}
 
@@ -228,6 +230,22 @@ public class MyGLEventListener implements GLEventListener {
 			gl.glTranslatef(0,0,-longueurSousMarin/2);
 			gl.glRotatef(180,0,1,0);
 			dessinerSphere(gl);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+			gl.glColor3d(0,0,0);
+			gl.glTranslatef(0,0,-(longueurSousMarin/2+rayonSousMarin));
+			gl.glScalef(0.4f,0.4f,0.05f);
+			dessinerCylindreHelice(gl);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+			gl.glTranslatef(0,-this.rayonSousMarin,0);
+			gl.glScalef(0.2f,0.05f, 0.4f);
+			dessinerCylindre(gl);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+			gl.glTranslatef(0,this.rayonSousMarin*1.25f,0);
+			gl.glScalef(0.2f,0.1f, 0.4f);
+			dessinerCockpit(gl);
 		gl.glPopMatrix();
 	}
 
@@ -293,6 +311,100 @@ public class MyGLEventListener implements GLEventListener {
 		}
 	}
 
+	public void dessinerREACTEURNUCLEAIRE() {
+
+	}
+
+	public void dessinerCylindreHelice(GL2 gl) {
+
+		ArrayList<ArrayList<Point>> pointsCylindre = sousMarin.getPointsCylindre();
+		for (int i = 0; i < pointsCylindre.size() - 1; i++) {
+			ArrayList<Point> pointsParallele = pointsCylindre.get(i);
+			ArrayList<Point> pointsParallele1 = pointsCylindre.get(i + 1);
+			for (int j = 0; j < sousMarin.getNbMeridienCylindre(); j++) {
+				Point p0 = pointsParallele.get(j);
+				Point p1 = pointsParallele1.get(j);
+				Point p2 = pointsParallele1.get(j + 1);
+				Point p3 = pointsParallele.get(j + 1);
+				gl.glBegin(GL2.GL_QUADS);
+				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
+				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
+
+				gl.glEnd();
+				gl.glBegin(GL2.GL_QUADS);
+				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
+				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
+
+				gl.glEnd();
+			}
+		}
+	}
+
+	public void dessinerHelice() {
+
+	}
+
+	public void dessinerGouvernail() {
+
+	}
+
+	public void dessinerCockpit(GL2 gl) {
+		ArrayList<ArrayList<Point>> pointsCockpit = sousMarin.getPointsCockpit();
+		for (int i = 0; i < pointsCockpit.size() - 1; i++) {
+			ArrayList<Point> pointsParallele = pointsCockpit.get(i);
+			ArrayList<Point> pointsParallele1 = pointsCockpit.get(i + 1);
+			for (int j = 0; j < sousMarin.getNbMeridienCockpit(); j++) {
+				if (i == 0) {
+					gl.glBegin(GL2.GL_TRIANGLES);
+
+					gl.glVertex3d(sousMarin.getPointsCockpit().get(0).get(j + 1).getX(), sousMarin.getPointsCockpit().get(0).get(j + 1).getY(), sousMarin.getPointsCockpit().get(0).get(j + 1).getZ());
+					gl.glVertex3d(sousMarin.getPointsCockpit().get(0).get(j).getX(), sousMarin.getPointsCockpit().get(0).get(j).getY(), sousMarin.getPointsCockpit().get(0).get(j).getZ());
+					gl.glVertex3d(sousMarin.getFaceCockpit()[0].getX(), sousMarin.getFaceCockpit()[0].getY(), sousMarin.getFaceCockpit()[0].getZ());
+
+
+					gl.glEnd();
+
+					gl.glBegin(GL2.GL_TRIANGLES);
+
+					gl.glVertex3d((sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j).getX()), sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j).getY(), sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j).getZ());
+					gl.glVertex3d(sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j + 1).getX(), sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j + 1).getY(), sousMarin.getPointsCockpit().get(sousMarin.getNbParalleleCockpit()).get(j + 1).getZ());
+					gl.glVertex3d(sousMarin.getFaceCockpit()[1].getX(), sousMarin.getFaceCockpit()[1].getY(), sousMarin.getFaceCockpit()[1].getZ());
+
+					gl.glEnd();
+				}
+
+				gl.glBegin(GL2.GL_QUADS);
+				Point p0 = pointsParallele.get(j);
+				Point p1 = pointsParallele1.get(j);
+				Point p2 = pointsParallele1.get(j + 1);
+				Point p3 = pointsParallele.get(j + 1);
+
+				gl.glVertex3d(p3.getX(), p3.getY(), p3.getZ());
+				gl.glVertex3d(p2.getX(), p2.getY(), p2.getZ());
+				gl.glVertex3d(p1.getX(), p1.getY(), p1.getZ());
+				gl.glVertex3d(p0.getX(), p0.getY(), p0.getZ());
+
+				gl.glEnd();
+			}
+		}
+		gl.glPushMatrix();
+		gl.glTranslatef(0,-this.rayonSousMarin/1.25f*3.5f,0);
+		gl.glScalef(1,0.75f,0.75f);
+		dessinerCylindre(gl);
+		gl.glPopMatrix();
+
+		gl.glPushMatrix();
+		gl.glTranslatef(0,this.rayonSousMarin*2.1f,0);
+		gl.glRotatef(90,0,1,0);
+		gl.glScalef(0.6f,1,1);
+		dessinerCylindre(gl);
+		gl.glPopMatrix();
+	}
+
 	//GETTER AND SETTER
 	//*************************************************************
 	public float getView_rotx() {
@@ -318,11 +430,28 @@ public class MyGLEventListener implements GLEventListener {
 	public void setScale(float scale2) {
 		this.scale = scale2;
 	}
-	public float getD() {
-		return d;
+	public float getX() {
+		return x;
 	}
 
-	public void setD(float d) {
-		this.d = d;
+	public void setX(float x) {
+		this.x += x;
 	}
+
+	public float getDelta() {
+		return delta;
+	}
+
+	public void setDelta(float delta) {
+		this.delta = (float) ((this.delta + delta) % (2*Math.PI));
+	}
+
+	public float getZ() {
+		return z;
+	}
+
+	public void setZ(float z) {
+		this.z += z;
+	}
+
 }
