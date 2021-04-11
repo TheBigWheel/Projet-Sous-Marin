@@ -41,22 +41,45 @@ class SceneKeyAdapter extends KeyAdapter {
             myGLEventListener.setDelta((float) (Math.PI/32));
             myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
             myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
+            myGLEventListener.setTheta((float) Math.PI/6);
+
+            if (myGLEventListener.getLambda()<= Math.PI/8){
+                myGLEventListener.setLambda((float) Math.PI/64);
+            }
         } 
         
         else if(KeyEvent.VK_RIGHT == kc) {
             myGLEventListener.setDelta((float) -(Math.PI/32));
             myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
             myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
-        } 
+            myGLEventListener.setTheta((float) Math.PI/6);
+            if (myGLEventListener.getLambda()>= -Math.PI/8){
+                myGLEventListener.setLambda((float) -Math.PI/64);
+            }
+        }
         
         else if(KeyEvent.VK_UP == kc) {
             myGLEventListener.setX((float) Math.sin(myGLEventListener.getDelta()));
             myGLEventListener.setZ((float) Math.cos(myGLEventListener.getDelta()));
-        } 
+            myGLEventListener.setTheta((float) Math.PI/6);
+
+            if (myGLEventListener.getLambda()>0){
+                myGLEventListener.setLambda((float) -Math.PI/64);
+            } else if (myGLEventListener.getLambda()<0){
+                myGLEventListener.setLambda((float) Math.PI/64);
+            }
+        }
         
         else if(KeyEvent.VK_DOWN == kc) {
             myGLEventListener.setX((float) -Math.sin(myGLEventListener.getDelta()));
             myGLEventListener.setZ((float) -Math.cos(myGLEventListener.getDelta()));
+            myGLEventListener.setTheta((float) -Math.PI/6);
+
+            if (myGLEventListener.getLambda()>0){
+                myGLEventListener.setLambda((float) -Math.PI/64);
+            } else if (myGLEventListener.getLambda()<0){
+                myGLEventListener.setLambda((float) Math.PI/64);
+            }
         }
         else {
         	//System.out.println(e.getKeyCode());

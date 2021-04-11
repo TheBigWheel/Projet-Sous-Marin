@@ -21,6 +21,11 @@ public class SousMarin {
     private int nbParalleleCockpit;
     private Point[] faceCockpit;
 
+    private ArrayList<ArrayList<Point>> pointsBaseHelice;
+    private Point extremiteBaseHelice;
+    private int nbMeridienBaseHelice;
+    private int nbParalleleBaseHelice;
+
 
     public SousMarin(float longueur, float rayon){
         this.longueur = longueur;
@@ -29,9 +34,10 @@ public class SousMarin {
     }
 
     public void  init(){
-        initCylindre();
-        initSphere();
-        initCockpit();
+        this.initCylindre();
+        this.initSphere();
+        this.initCockpit();
+        this.initBaseHelice();
     }
 
     public void initCylindre(){
@@ -70,7 +76,7 @@ public class SousMarin {
         double y;
         double z;
 
-        for(int j = 0; j< nbParalleleSphere; j++) {
+        for(int j = 0; j<= nbParalleleSphere; j++) {
             pointsSphere.add(new ArrayList<Point>());
             lambda = (Math.PI/2) - Math.PI*((double) j/nbParalleleSphere);
             z=rayon*Math.sin(lambda);
@@ -109,6 +115,35 @@ public class SousMarin {
         }
     }
 
+    /**
+     * Initialise la base de l'hélice
+     */
+    public void initBaseHelice() {
+        pointsBaseHelice = new ArrayList<ArrayList<Point>>() ;
+        extremiteBaseHelice = new Point(0, 0, longueur/2-this.longueur);
+
+        //Valeur des méridiens de l'hélice
+        nbMeridienBaseHelice = 50;
+        nbParalleleBaseHelice = 3;
+
+        double theta;
+        double x;
+        double y;
+        double z;
+
+        for(int j = 0; j < nbParalleleBaseHelice; j++) {
+            pointsBaseHelice.add(new ArrayList<Point>());
+            for(int i=0;i<=nbMeridienBaseHelice;i++){
+                theta = 2.0*Math.PI*((double) i/nbMeridienBaseHelice);
+                x=rayon*Math.cos(theta);
+                y=rayon*Math.sin(theta);
+                z = (longueur / 2) - ((longueur / nbParalleleBaseHelice) * j);
+                pointsBaseHelice.get(j).add(new Point(x,y,z));
+            }
+        }
+    }
+
+    //GETTER AND SETTER
     public ArrayList<ArrayList<Point>> getPointsCylindre() {
         return pointsCylindre;
     }
@@ -147,5 +182,21 @@ public class SousMarin {
 
     public Point[] getFaceCockpit() {
         return faceCockpit;
+    }
+
+    public ArrayList<ArrayList<Point>> getPointsBaseHelice() {
+        return pointsBaseHelice;
+    }
+
+    public Point getExtremiteBaseHelice() {
+        return extremiteBaseHelice;
+    }
+
+    public int getNbMeridienBaseHelice() {
+        return nbMeridienBaseHelice;
+    }
+
+    public int getNbParalleleBaseHelice() {
+        return nbParalleleBaseHelice;
     }
 }
